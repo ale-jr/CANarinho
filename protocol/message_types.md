@@ -84,7 +84,7 @@ Mensagens de comando utilizadas para controlar dispositivos.
 
 | Byte | Campo | Valores |
 |---|---|---|
-| `0` | Ação | off/on/toggle/set_level |
+| `0` | Ação | off/on/toggle/set_level/toggle_level/step_up/step_down |
 | `1` | Valor | 0–255 |
 | `2` | Timer | múltiplos de 10s |
 
@@ -96,6 +96,11 @@ Mensagens de comando utilizadas para controlar dispositivos.
 | `0x01` | On |
 | `0x02` | Toggle |
 | `0x03` | Set level |
+| `0x04` | Toggle level |
+| `0x05` | Step Up |
+| `0x06` | Step Down |
+
+
 
 ### Exemplo
 
@@ -176,13 +181,14 @@ Eventos instantâneos normalmente gerados por interação humana.
 
 | Byte | Campo | Valores |
 |---|---|---|
-| `0` | Tipo | press/release/long/double |
+| `0` | Tipo | click/press/release/long/double |
 | `1` | Duração | unidades de 100ms |
 
 ## Eventos
 
 | Valor | Evento |
 |---|---|
+| `0x00` | Click |
 | `0x01` | Press |
 | `0x02` | Release |
 | `0x03` | Long press |
