@@ -8,6 +8,7 @@
 #define PRESS_REPEAT_MS 2000
 #define CONTINUOUS_MODE_CLICK_TIMEOUT 500
 #define CONTINUOUS_MODE_LONG_CLICK_TIMEOUT 1000
+#define DOUBLE_CLICK_TIMEOUT 250
 
 ButtonChannel::ButtonChannel(int pin, uint8_t channel)
 {
@@ -47,6 +48,26 @@ void ButtonChannel::loop()
 
     if (!_pressed)
     {
+
+        if (_click_count > 0)
+        {
+            unsigned long releasedTime = now - _release_time;
+            if (releasedTime > DOUBLE_CLICK_TIMEOUT)
+            {
+                if (_click_count > 1)
+                {
+                    emit_event(ButtonPressType::DoubleClick);
+                    debug_print_text("double click");
+                }
+                else
+                {
+                    emit_event(ButtonPressType::Click);
+                    debug_print_text("click (timeout)");
+                }
+                _click_count = 0;
+            }
+        }
+
         return;
     }
 
@@ -84,7 +105,7 @@ void ButtonChannel::register_action(ButtonAction action)
         _continuous_mode_timeout = CONTINUOUS_MODE_LONG_CLICK_TIMEOUT;
     }
 
-    if (action.pressType == ButtonPressType::Click)
+    if (action.pressType == ButtonPressType::DoubleClick)
     {
         _has_dobule_click = true;
     }
@@ -107,6 +128,7 @@ void ButtonChannel::handle_press()
 
 void ButtonChannel::handle_release()
 {
+    _release_time = millis();
     _pressed = false;
     debug_print_text("idle");
     if (_status == ButtonStatus::Continuous)
@@ -128,8 +150,16 @@ void ButtonChannel::handle_release()
     }
     else
     {
-        emit_event(ButtonPressType::Click);
-        debug_print_text("click");
+        if (!_has_dobule_click)
+        {
+            emit_event(ButtonPressType::Click);
+            debug_print_text("click");
+            _click_count = 0;
+        }
+        else
+        {
+            _click_count++;
+        }
     }
 }
 
