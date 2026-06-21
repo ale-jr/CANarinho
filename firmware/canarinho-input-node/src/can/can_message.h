@@ -47,3 +47,10 @@ struct EventMessage
     uint8_t payload[8];
     uint8_t payload_len;
 };
+
+struct StatusMessage
+{
+    uint8_t channel;
+    uint8_t payload[8];
+    uint8_t payload_len;
+};

@@ -86,7 +86,7 @@ Mensagens de comando utilizadas para controlar dispositivos.
 |---|---|---|
 | `0` | Ação | off/on/toggle/set_level/toggle_level/step_up/step_down |
 | `1` | Valor | 0–255 |
-| `2` | Timer | múltiplos de 10s |
+| `2` | transition_time | múltiplos de 100ms |
 
 ### Ações
 

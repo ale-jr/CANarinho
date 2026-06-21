@@ -19,6 +19,7 @@ static void debug_print_hex_byte(uint8_t value)
 }
 void debug_print_can_frame(const char *prefix, const twai_message_t &msg)
 {
+    return;
     if (!DEBUG_SERIAL)
     {
         return;

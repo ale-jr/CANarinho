@@ -3,6 +3,7 @@
 #include "can_tx.h"
 #include "../config/constants.h"
 #include "./debug_serial.h"
+#include "./node/node.h"
 
 uint32_t build_can_id(const CanMessage &msg)
 {
@@ -15,6 +16,11 @@ uint32_t build_can_id(const CanMessage &msg)
 
 bool send_message(const CanMessage &msg)
 {
+    if (ENABLE_DEBUG_LOOPBACK)
+    {
+        handle_message(const_cast<CanMessage &>(msg));
+    }
+
     twai_message_t frame{};
 
     frame.extd = 1;
@@ -86,6 +92,26 @@ bool send_command(const CommandMessage &command)
         message.payload,
         command.payload,
         command.payload_len);
+
+    return send_message(message);
+}
+
+bool send_status(const StatusMessage &status)
+{
+    CanMessage message = {};
+
+    message.src = NODE_ID;
+    message.type = MessageType::Status;
+    message.priority = MessagePriority::Status;
+
+    message.dst = BROADCAST_NODE_ID;
+
+    message.channel = status.channel;
+    message.payload_len = status.payload_len;
+    memcpy(
+        message.payload,
+        status.payload,
+        status.payload_len);
 
     return send_message(message);
 }
