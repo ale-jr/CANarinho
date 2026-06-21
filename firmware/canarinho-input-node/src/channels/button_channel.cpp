@@ -3,8 +3,8 @@
 #include "./can/can_tx.h"
 #include "./config/constants.h"
 #include "./debug_serial.h"
-#define DEBOUNCE_TIMEOUT_US 50000
-#define LONG_PRESS_MS 1000
+#define DEBOUNCE_TIMEOUT_MS 30
+#define LONG_PRESS_MS 500
 
 ButtonChannel::ButtonChannel(int pin, uint8_t channel)
 {
@@ -16,26 +16,31 @@ void ButtonChannel::setup()
 {
 
     pinMode(_pin, INPUT_PULLUP);
-
-    attachInterruptArg(_pin, ButtonChannel::isr, this, CHANGE);
 }
 
 void ButtonChannel::loop()
 {
-    if (!_state_changed)
-    {
-        return;
-    }
+    bool current_state =
+        digitalRead(_pin);
 
-    _state_changed = false;
+    if (current_state != _last_state)
+    {
+        unsigned long now = millis();
 
-    if (_current_state == LOW)
-    {
-        handle_press();
-    }
-    else
-    {
-        handle_release();
+        if (now - _last_change_ms >= DEBOUNCE_TIMEOUT_MS)
+        {
+            _last_change_ms = now;
+            _last_state = current_state;
+
+            if (current_state == LOW)
+            {
+                handle_press();
+            }
+            else
+            {
+                handle_release();
+            }
+        }
     }
 }
 
@@ -52,26 +57,7 @@ void ButtonChannel::register_action(ButtonAction action)
 void ButtonChannel::handle_message(CanMessage &message)
 {
 }
-void IRAM_ATTR ButtonChannel::isr(void *arg)
-{
-    debug_print_text("ISR");
-    auto *self = static_cast<ButtonChannel *>(arg);
 
-    const uint64_t now =
-        esp_timer_get_time();
-
-    if (now - self->_last_interrupt_us < DEBOUNCE_TIMEOUT_US)
-    {
-        return;
-    }
-
-    self->_last_interrupt_us = now;
-
-    self->_current_state =
-        digitalRead(self->_pin);
-
-    self->_state_changed = true;
-}
 void ButtonChannel::handle_press()
 {
     _pressed = true;
@@ -83,8 +69,7 @@ void ButtonChannel::handle_release()
 {
     _pressed = false;
     emit_event(ButtonPressType::Release);
-    uint32_t duration =
-        millis() - _press_time;
+    uint32_t duration = millis() - _press_time;
 
     if (duration >= LONG_PRESS_MS)
     {

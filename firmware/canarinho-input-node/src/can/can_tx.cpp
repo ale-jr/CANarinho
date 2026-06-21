@@ -33,17 +33,19 @@ bool send_message(const CanMessage &msg)
     return result == ESP_OK;
 }
 
+unsigned long next_heartbeat_ms = 0;
+
 bool send_heartbeat()
 {
+    next_heartbeat_ms = millis() + HEARTBEAT_INTERVAL_MS;
 
-    CanMessage message = {
-        .priority = MessagePriority::Heartbeat,
-        .src = NODE_ID,
-        .dst = BROADCAST_NODE_ID,
-        .type = MessageType::HeartBeat,
-        .channel = 0,
-        .payload_len = 0,
-    };
+    CanMessage message = {};
+    message.priority = MessagePriority::Heartbeat;
+    message.src = NODE_ID;
+    message.dst = BROADCAST_NODE_ID;
+    message.type = MessageType::HeartBeat;
+    message.channel = 0;
+    message.payload_len = 0;
 
     return send_message(message);
 }

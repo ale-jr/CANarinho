@@ -45,23 +45,13 @@ private:
     ButtonAction _actions[MAX_ACTIONS];
     uint8_t _action_count = 0;
 
-    static void IRAM_ATTR isr(
-        void *arg);
-
     void handle_press();
     void handle_release();
-
-    volatile bool _state_changed = false;
-    volatile bool _current_state = false;
-    volatile uint64_t _last_interrupt_us = 0;
-
+    bool _last_state = HIGH;
+    unsigned long _last_change_ms = 0;
     bool _pressed = false;
-
     uint32_t _press_time = 0;
 
-    bool _long_click_sent = false;
-
     void emit_event(ButtonPressType type);
-
     void handle_action(ButtonAction &action);
 };

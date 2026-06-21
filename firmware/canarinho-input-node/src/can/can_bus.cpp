@@ -8,6 +8,7 @@
 #include "can_parser.h"
 #include "can_tx.h"
 #include "./node/node.h"
+
 static bool should_accept_msg(uint32_t can_id)
 {
 
@@ -40,6 +41,8 @@ bool setup_can()
         twai_driver_uninstall();
         return false;
     }
+
+    next_heartbeat_ms = millis() + HEARTBEAT_JITTER_MS;
 
     return true;
 }
@@ -89,4 +92,10 @@ static void process_can_rx()
 void loop_can()
 {
     process_can_rx();
+
+    unsigned long now = millis();
+    if (now >= next_heartbeat_ms)
+    {
+        send_heartbeat();
+    }
 }
