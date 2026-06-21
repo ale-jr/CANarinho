@@ -173,32 +173,31 @@ Eventos instantâneos normalmente gerados por interação humana.
 ## Exemplos
 
 - botão pressionado
-- double click
-- long press
+- botão soltado
+- botão clicado
+- botao click longo
 - sensor PIR disparado
 
 ## Payload — botões
 
 | Byte | Campo | Valores |
 |---|---|---|
-| `0` | Tipo | click/press/release/long/double |
-| `1` | Duração | unidades de 100ms |
+| `0` | Tipo | pressed/released/clicked/long clicked |
 
 ## Eventos
 
 | Valor | Evento |
 |---|---|
-| `0x00` | Click |
-| `0x01` | Press |
-| `0x02` | Release |
-| `0x03` | Long press |
-| `0x04` | Double press |
+| `0x00` | Pressed |
+| `0x01` | Releases |
+| `0x02` | Clicked |
+| `0x03` | Long clicked |
 
 ## Exemplo
 
 ```text
 SRC=0x15 DST=0xFE TYPE=EVT CH=0x10
-Payload: [0x01, 0x00]
+Payload: [0x01]
 ```
 
 ---
