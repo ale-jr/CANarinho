@@ -4,10 +4,11 @@
 
 enum class ButtonPressType : uint8_t
 {
-    Press = 0,
+    ContinuousPress = 0,
     Release = 1,
     Click = 2,
     LongClick = 3,
+    DoubleClick = 4
 };
 
 enum class ButtonActionType : uint8_t
@@ -15,6 +16,13 @@ enum class ButtonActionType : uint8_t
     None,
     SendCommand,
     SendEvent
+};
+
+enum class ButtonStatus : uint8_t
+{
+    Idle,
+    Pressed,
+    Continuous
 };
 
 struct ButtonAction
@@ -44,6 +52,8 @@ private:
     static constexpr uint8_t MAX_ACTIONS = 10;
     ButtonAction _actions[MAX_ACTIONS];
     uint8_t _action_count = 0;
+    bool _has_dobule_click = false;
+    uint8_t _click_count = 0;
 
     void handle_press();
     void handle_release();
@@ -51,6 +61,11 @@ private:
     unsigned long _last_change_ms = 0;
     bool _pressed = false;
     uint32_t _press_time = 0;
+    uint32_t _release_time = 0;
+    unsigned long _last_press_event_ms = 0;
+
+    ButtonStatus _status = ButtonStatus::Idle;
+    unsigned long _continuous_mode_timeout = 0;
 
     void emit_event(ButtonPressType type);
     void handle_action(ButtonAction &action);
