@@ -2,9 +2,10 @@
 
 #include "can_message.h"
 
-bool send_message(
-    const CanMessage& msg);
-
 bool send_heartbeat();
-bool send_event();
-bool send_command();
+
+bool send_event(const EventMessage &event);
+
+bool send_command(const CommandMessage &command);
+
+bool send_message(const CanMessage &msg);

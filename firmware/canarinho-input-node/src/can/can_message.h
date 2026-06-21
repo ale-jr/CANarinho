@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Arduino.h>
+
 enum class MessageType : uint8_t
 {
     Command = 0x0,
@@ -25,6 +27,22 @@ struct CanMessage
     uint8_t src;
     uint8_t dst;
     MessageType type;
+    uint8_t channel;
+    uint8_t payload[8];
+    uint8_t payload_len;
+};
+
+struct CommandMessage
+{
+    uint8_t dst;
+    uint8_t channel;
+    uint8_t payload[8];
+    uint8_t payload_len;
+};
+
+struct EventMessage
+{
+    uint8_t dst;
     uint8_t channel;
     uint8_t payload[8];
     uint8_t payload_len;
